@@ -1,0 +1,10 @@
+﻿Name: Backbone.Sample
+AntiForgery: enabled
+Author: Steve Taylor
+Website: http://stevetaylor.me.uk
+Version: 1.0
+OrchardVersion: 1.0
+Description: Sample module for Orchard.Backbone
+Features:
+    Backbone.Sample:
+        Description: Sample module for Orchard.Backbone.

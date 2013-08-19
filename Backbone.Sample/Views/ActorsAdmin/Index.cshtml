@@ -1,0 +1,73 @@
+﻿@{
+    Script.Require("OrchardBackbone");
+    Layout.Title = T("Actors");
+}
+
+<!-- Main table to render the collection in -->
+    <table id="actorsTable" class="items">
+        <thead>
+            <th>@T("Actor Name")</th>
+            <th></th>
+        </thead>
+    </table>
+
+<!-- template for each model in the collection -->
+    <script id="modelTemplate" type="text/template">
+        <td><%=ActorName %></td>
+        <td><a href="/Backbone.Sample/ActorsAdmin/Edit/<%=Id%>" data-navigate="true">Edit</a> | <a href="/Backbone.Sample/ActorsAdmin/Delete/<%=Id%>" data-navigate="true">Delete</a></td>
+    </script>
+
+
+@using (Script.Foot())
+{
+    <script>
+
+        // view for the model
+        var ModelView = Backbone.View.extend({
+            tagName: "tr",
+
+            template: _.template($("#modelTemplate").html()),
+
+            render: function () {
+                // append the model to with the template
+                this.$el.html(this.template(this.model.toJSON()));
+                return this;
+            }
+        });
+
+
+        var CollectionView = Backbone.View.extend({
+            tagName: "tbody",// the element
+
+            render: function () {
+                // render each model in the collection
+                this.collection.each(this.addOne, this);
+
+                // append the tbody to the table element
+                $("#actorsTable").append(this.el);
+                return this;
+            },
+
+            addOne: function (item) {
+                // create a new instance of the model view
+                var modelView = new ModelView({ model: item });
+
+                // render the model view and append to the collection element
+                this.$el.append(modelView.render().el);
+            }
+        });
+
+
+        // create a new collection instance
+        var actors = new Orchard.Backbone.ApiItems({ api: "backbone.sample/actors" });
+
+        // fetch the collection from the api
+        actors.fetch().done(function () {
+            // when complete, pass into the collection view and render
+            var collectionView = new CollectionView({ collection: actors }).render();
+        });
+
+
+
+    </script>
+}

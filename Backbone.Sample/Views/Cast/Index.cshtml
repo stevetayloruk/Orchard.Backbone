@@ -1,0 +1,71 @@
+﻿
+@{
+    Script.Require("OrchardBackbone");
+    Layout.Title = T("Cast");
+}
+
+<style>
+    ul { width: 100%; list-style: none; }
+    #list li { float: left; width: 240px;  margin: 20px; }
+    #list img  { height: 250px; margin: 0 auto; border-radius: 10px; }
+</style>
+
+<!-- Main list to render the collection in-->
+<ul id="list"></ul>
+
+
+<!-- template for each model in the collection -->
+<script id="modelTemplate" type="text/template">
+    <img src="<%= '/Media/Default/Images/Actors/' + Picture %>" alt="<%= ActorName %>" />
+    <h1><%= ActorName %></h1>
+    <div><%= CharacterName %></div>
+</script>
+
+
+@using (Script.Foot())
+{
+
+    <script>
+        // view for the model
+        var ModelView = Backbone.View.extend({
+            tagName: "li",
+            template: _.template($("#modelTemplate").html()),
+
+            render: function () {
+                // append the model to with the template
+                this.$el.html(this.template(this.model.toJSON()));
+                return this;
+            }
+        });
+
+
+        var CollectionView = Backbone.View.extend({
+            el: $("#list"),// the list element
+
+            render: function () {
+                // render each model in the collection
+                this.collection.each(this.addOne, this);
+                return this;
+            },
+
+            addOne: function (item) {
+                // create a new instance of the model view
+                var modelView = new ModelView({ model: item });
+
+                // render the model view and append to the collection element
+                this.$el.append(modelView.render().el);
+            }
+        });
+
+        // create a new collection instance
+        var actors = new Orchard.Backbone.ApiItems({ api: "backbone.sample/actors" });
+
+        // fetch the collection from the api
+        actors.fetch().done(function () {
+            // when complete, pass into the collection view and render
+            var collectionView = new CollectionView({ collection: actors }).render();
+        });
+
+
+    </script>
+}

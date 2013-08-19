@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Placement>
+	<Place Parts_Common_Metadata="-"/>
+	<Place Parts_Common_Metadata_Summary="-"/>
+	
+	<Place Parts_Episode_Edit="Content:10" />
+	<Place Parts_Episode="Content:10"/>
+</Placement>

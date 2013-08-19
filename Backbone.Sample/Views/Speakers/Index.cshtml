@@ -1,0 +1,79 @@
+﻿
+@{
+    Script.Require("OrchardBackbone");
+    Layout.Title = T("Speakers");
+}
+
+<style>
+    ul { width: 100%; list-style: none; }
+    #list li { float: left; width: 240px;  margin: 20px; }
+    #list img  { width: 240px; margin: 0 auto; border-radius: 10px; }
+</style>
+
+<!-- main list to render the collection in-->
+<ul id="list"></ul>
+
+
+<!-- template for each model in the collection -->
+<script id="modelTemplate" type="text/template">
+    <img src="<%= Fields.Photo.replace("~", "") %>" alt="<%= Title %>" />
+    <h1><%= Title %></h1>
+    <div><%= Body.substring(0, 200) + "..." %></div>
+</script>
+
+
+@using (Script.Foot())
+{
+
+    <script>
+        // view for the model
+        var ModelView = Backbone.View.extend({
+            tagName: "li",
+            template: _.template($("#modelTemplate").html()),
+
+            initialize: function () {
+                // render when the model changes
+                this.model.bind('change', this.render, this);
+            },
+
+            render: function () {
+                // append the model to with the template
+                this.$el.html(this.template(this.model.toJSON()));
+                return this;
+            }
+        });
+
+
+        // view for the collection
+        var CollectionView = Backbone.View.extend({
+            el: $("#list"), // the list element
+
+            render: function () {
+                // render each model in the collection
+                this.collection.each(this.addOne, this);
+                return this;
+            },
+
+            addOne: function (item) {
+                // create a new instance of the model view
+                var modelView = new ModelView({ model: item });
+
+                // render the model view and append to the collection element
+                this.$el.append(modelView.render().el);
+            }
+        });
+
+
+        // create a new collection instance
+        var speakers = new Orchard.Backbone.ContentItems({ type: "Speaker" });
+
+        // fetch the collection from the api
+        speakers.fetch().done(function () {
+            // when complete, pass into the collection view and render
+            var collectionView = new CollectionView({ collection: speakers }).render();
+        });
+
+
+    </script>
+}
+
